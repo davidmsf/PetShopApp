@@ -6,7 +6,7 @@ namespace PetConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ConsolePrinter cp = new ConsolePrinter();
         }
     }
 }
