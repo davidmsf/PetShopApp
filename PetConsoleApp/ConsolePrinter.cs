@@ -1,4 +1,5 @@
 ﻿using PetShopApp.Core.DomainService;
+using PetShopApp.Infrastructure.Static.Data;
 using PetShopApp.Infrastructure.Static.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace PetConsoleApp
     public class ConsolePrinter
     {
         static IPetRepository petRepository;
+         
         string[] menuItems = {
                 "Show all pets",
                 "Add new pet",
@@ -20,6 +22,7 @@ namespace PetConsoleApp
 
         public ConsolePrinter()
         {
+            FakeDB.InitData();
             petRepository = new PetRepository();
             var selection = ShowMenu();
             HandleSelection(selection);
@@ -38,14 +41,12 @@ namespace PetConsoleApp
             }
 
             int number;
-            string value = Console.ReadLine();
-
-            while (!int.TryParse(value, out number)
+            while (!int.TryParse(Console.ReadLine(), out number)
                 || number < 1
                 || number > menuItems.Length)
             {
                 Console.WriteLine("Has to be a number");
-                value = Console.ReadLine();
+               
             }
 
             return number;
