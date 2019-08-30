@@ -11,7 +11,7 @@ namespace PetShopApp.Core.DomainService
         /// Get all pets
         /// </summary>
         /// <returns>List of pets</returns>
-        List<Pet> ReadPets();
+        IEnumerable<Pet> ReadPets();
 
         /// <summary>
         /// Delete specific pet by id 

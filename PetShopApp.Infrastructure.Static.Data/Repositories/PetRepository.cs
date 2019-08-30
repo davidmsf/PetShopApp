@@ -2,7 +2,7 @@
 using PetShopApp.Core.Entity;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace PetShopApp.Infrastructure.Static.Data.Repositories
 {
@@ -13,22 +13,26 @@ namespace PetShopApp.Infrastructure.Static.Data.Repositories
         public Pet CreatePet(Pet pet)
         {
             pet.Id = FakeDB.id++;
-            FakeDB.pets.Add(pet);
+            var pets = FakeDB.pets.ToList();
+            pets.Add(pet);
+            FakeDB.pets = pets;
             return pet;
         }
 
         public void Delete(int id)
         {
-            var petToDelete = FakeDB.pets.Find(pet => pet.Id == id);
-            FakeDB.pets.Remove(petToDelete);
+            var pets = FakeDB.pets.ToList();
+            var petToDelete = FakeDB.pets.FirstOrDefault(pet => pet.Id == id);
+            pets.Remove(petToDelete);
+            FakeDB.pets = pets;
         }
 
         public Pet GetPetById(int id)
         {
-            return FakeDB.pets.Find(pet => pet.Id == id);
+            return FakeDB.pets.FirstOrDefault(pet => pet.Id == id);
         }
 
-        public List<Pet> ReadPets()
+        public IEnumerable<Pet> ReadPets()
         {
             return FakeDB.pets;
         }

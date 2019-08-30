@@ -1,31 +1,41 @@
-﻿using PetShopApp.Core.DomainService;
+﻿using PetShopApp.Core.ApplicationService;
+using PetShopApp.Core.ApplicationService.Services;
+using PetShopApp.Core.DomainService;
 using PetShopApp.Core.Entity;
 using PetShopApp.Infrastructure.Static.Data;
 using PetShopApp.Infrastructure.Static.Data.Repositories;
 using System;
-
+using System.Collections.Generic;
 
 namespace PetConsoleApp
 {
     public class ConsolePrinter
     {
+        private readonly IPetService _petService;
         static IPetRepository petRepository;
 
         string[] menuItems = {
                 "Show all pets",
-                "Add new pet",
-                "Edit pet",
-                "Delete pet",
-                "Find pet",
+                "Add",
+                "Update",
+                "Delete",
+                "Search by type",
+                "Sort pets by price",
+                "Show 5 cheapest available Pets",
                 "Exit"
         };
 
         public ConsolePrinter()
         {
+            
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.Clear();
+
             FakeDB.InitData();
+
             petRepository = new PetRepository();
+            _petService = new PetService(petRepository);
+
             var selection = ShowMenu();
             HandleSelection(selection);
 
@@ -64,54 +74,97 @@ namespace PetConsoleApp
                 switch (selection)
                 {
                     case 1:
-                        ShowAllPets();
+                        ShowAllPets(_petService.ReadPets());
                         break;
 
                     case 2:
-                        var name = PrintQuestion("Write the name of the pet:");
-
-                        var color = PrintQuestion("Write the color of the pet:");
-
-                        var previousOwner = PrintQuestion("Write the name of the previous owner:");
-
-                        var type = PrintQuestion("Write the type of the pet:");
-
-                        var price = PrintQuestionReturnDouble("Write the price of the pet:");
-
-                        var soldDate = PrintQuestionReturnDateTime("Write the sold date of the pet(dd/mm/yyyy):");
-
-                        var birthDate = PrintQuestionReturnDateTime("Write the birth date of the pet(dd/mm/yyyy):");
-
-                        var pet = CreatePet(name,
-                                    color,
-                                    previousOwner,
-                                    type,
-                                    price,
-                                    soldDate,
-                                    birthDate);
-
-                        var SavedPet = SavePet(pet);
-                        if (SavedPet.Id > 0)
-                        {
-                            Console.WriteLine("The pet has been added");
-                        }
-
+                        CreatePet();
                         break;
 
                     case 3:
-                        UpdatePet(petRepository.GetPetById(GetIdFromUser()));
+                        UpdatePet(_petService.FindPetById(GetIdFromUser()));
                         break;
 
                     case 4:
-                        //DeleteVideo(GetIdFromUser());
-
+                        Delete(GetIdFromUser());
                         break;
 
+                    case 5:
+                        SearchByType();
+                        break;
+
+                    case 6:
+                        SortByPrice();
+                        break;
+
+                    case 7:
+                        CheapestPets();
+                        break;
                 }
-
                 selection = ShowMenu();
-
             }
+        }
+
+        private void SearchByType()
+        {
+            List<Pet> petsByType = _petService.SearchByType(PrintQuestion("Write the type of the pet:"));
+            ShowAllPets(petsByType);
+        }
+
+        private void CheapestPets()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SortByPrice()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CreatePet()
+        {
+            string name, color, previousOwner, type;
+            double price;
+            DateTime soldDate, birthDate;
+
+            insertPetProperties(out name,
+                                out color,
+                                out previousOwner,
+                                out type,
+                                out price,
+                                out soldDate,
+                                out birthDate);
+
+            Pet pet = _petService.NewPet(name,
+                               color,
+                               previousOwner,
+                               type,
+                               price,
+                               soldDate,
+                               birthDate);
+
+            var SavedPet = _petService.CreatePet(pet);
+
+            if (SavedPet.Id > 0)
+            {
+                Console.WriteLine("The pet has been added");
+            }
+        }
+
+        private void insertPetProperties(out string name, out string color, out string previousOwner, out string type, out double price, out DateTime soldDate, out DateTime birthDate)
+        {
+            name = PrintQuestion("Write the name of the pet:");
+            color = PrintQuestion("Write the color of the pet:");
+            previousOwner = PrintQuestion("Write the name of the previous owner:");
+            type = PrintQuestion("Write the type of the pet:");
+            price = PrintQuestionReturnDouble("Write the price of the pet:");
+            soldDate = PrintQuestionReturnDateTime("Write the sold date of the pet(dd/mm/yyyy):");
+            birthDate = PrintQuestionReturnDateTime("Write the birth date of the pet(dd/mm/yyyy):");
+        }
+
+        private void Delete(int id)
+        {
+            _petService.Delete(id);
         }
 
         void UpdatePet(Pet pet)
@@ -131,97 +184,45 @@ namespace PetConsoleApp
                 Console.WriteLine("Select a number:");
             }
             
-            string property = "";
+            
             switch (selection)
             {
                 case 1:
-
                     pet.Name = PrintQuestion("Write the name of the pet:");
-                    property = "Name";
                     break;
 
                 case 2:
-
                     pet.Type = PrintQuestion("Write the type of the pet:");
-                    property = "Type";
                     break;
 
                 case 3:
-
-                    pet.PreviousOwner = PrintQuestion("Write the previous owner of the pet:");
-                    property = "PreviousOwner";
+                    pet.PreviousOwner = PrintQuestion("Write the previous owner of the pet:");                    
                     break;
 
                 case 4:
-
-                    pet.Price = PrintQuestionReturnDouble("Write the price of the pet:");
-                    property = "Price";
+                    pet.Price = PrintQuestionReturnDouble("Write the price of the pet:");                    
                     break;
 
                 case 5:
-
-                    pet.SoldDate = PrintQuestionReturnDateTime("Write the sold date of the pet(dd/mm/yyyy):");
-                    property = "SoldDate";
+                    pet.SoldDate = PrintQuestionReturnDateTime("Write the sold date of the pet(dd/mm/yyyy):");                    
                     break;
 
                 case 6:
-
-                    pet.BirthDate = PrintQuestionReturnDateTime("Write the birth date of the pet(dd/mm/yyyy):");
-                    property = "BirthDate";
+                    pet.BirthDate = PrintQuestionReturnDateTime("Write the birth date of the pet(dd/mm/yyyy):");                    
                     break;
 
-                case 7:
- 
-                    pet.Color = PrintQuestion("Write the color of the pet:");
-                    property = "Color";
-
+                case 7: 
+                    pet.Color = PrintQuestion("Write the color of the pet:");                    
                     break;
             }
-            
 
-            //var propertyType = pet.GetType().GetProperty(property);
-            //propertyType.SetValue(pet, pet.GetType().GetProperty(property).GetValue(pet));
-            petRepository.UpdatePet(pet, property);
+            _petService.UpdatePet(pet);
         }
 
-        Pet CreatePet(string name,
-                        string color, 
-                        string previousOwner, 
-                        string type, 
-                        double price, 
-                        DateTime soldDate, 
-                        DateTime birthDate)
-        {
-            Pet pet = new Pet
-            {
-                Name = name,
-
-                Color = color,
-
-                PreviousOwner = previousOwner,
-
-                Type = type,
-
-                Price = price,
-
-                SoldDate = soldDate,
-
-                BirthDate = birthDate
-            };
-
-            return pet;
-            
-        }
-        
-        Pet SavePet(Pet pet)
-        {
-            return petRepository.CreatePet(pet); 
-        }
-
-        void ShowAllPets()
+        void ShowAllPets(List<Pet> pets)
         {
             
-            foreach (var pet in petRepository.ReadPets())
+            foreach (var pet in pets)
             {
                 Console.WriteLine($"Id: {pet.Id}");
                 Console.WriteLine($"Name: {pet.Name}");
