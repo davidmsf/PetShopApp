@@ -26,5 +26,9 @@ namespace PetShopApp.Core.ApplicationService
                         DateTime birthDate);
 
         List<Pet> SearchByType(string type);
+
+        List<Pet> OrderByPrice();
+
+        List<Pet> GetFiveCheapestPets();
     }
 }

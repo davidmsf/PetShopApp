@@ -7,7 +7,7 @@ namespace PetShopApp.Infrastructure.Static.Data
 {
     public static class FakeDB
     {
-        public static IEnumerable<Pet> pets;
+        public static List<Pet> pets;
         public static int id = 1;
 
 

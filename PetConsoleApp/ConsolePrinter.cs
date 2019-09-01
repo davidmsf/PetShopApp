@@ -14,12 +14,13 @@ namespace PetConsoleApp
         private readonly IPetService _petService;
         static IPetRepository petRepository;
 
-        string[] menuItems = {
+        string[] menuItems = 
+        {
                 "Show all pets",
-                "Add",
-                "Update",
-                "Delete",
                 "Search by type",
+                "Add",
+                "Delete",
+                "Update",
                 "Sort pets by price",
                 "Show 5 cheapest available Pets",
                 "Exit"
@@ -45,7 +46,7 @@ namespace PetConsoleApp
         {
 
 
-            Console.WriteLine("Select an action from the menu by selecting the menuitem number:");
+            Console.WriteLine("\nSelect an action from the menu by selecting the menuitem number: \n");
 
             for (int i = 0; i < menuItems.Length; i++)
             {
@@ -78,11 +79,11 @@ namespace PetConsoleApp
                         break;
 
                     case 2:
-                        CreatePet();
+                        SearchByType();
                         break;
 
                     case 3:
-                        UpdatePet(_petService.FindPetById(GetIdFromUser()));
+                        CreatePet();
                         break;
 
                     case 4:
@@ -90,7 +91,7 @@ namespace PetConsoleApp
                         break;
 
                     case 5:
-                        SearchByType();
+                        UpdatePet(_petService.FindPetById(GetIdFromUser()));
                         break;
 
                     case 6:
@@ -98,7 +99,7 @@ namespace PetConsoleApp
                         break;
 
                     case 7:
-                        CheapestPets();
+                        FiveCheapestPets();
                         break;
                 }
                 selection = ShowMenu();
@@ -111,14 +112,14 @@ namespace PetConsoleApp
             ShowAllPets(petsByType);
         }
 
-        private void CheapestPets()
+        private void FiveCheapestPets()
         {
-            throw new NotImplementedException();
+            ShowAllPets(_petService.GetFiveCheapestPets());
         }
 
         private void SortByPrice()
         {
-            throw new NotImplementedException();
+            ShowAllPets(_petService.OrderByPrice());
         }
 
         private void CreatePet()
@@ -151,7 +152,13 @@ namespace PetConsoleApp
             }
         }
 
-        private void insertPetProperties(out string name, out string color, out string previousOwner, out string type, out double price, out DateTime soldDate, out DateTime birthDate)
+        private void insertPetProperties(out string name,
+                                            out string color, 
+                                            out string previousOwner, 
+                                            out string type, 
+                                            out double price, 
+                                            out DateTime soldDate, 
+                                            out DateTime birthDate)
         {
             name = PrintQuestion("Write the name of the pet:");
             color = PrintQuestion("Write the color of the pet:");
@@ -169,6 +176,7 @@ namespace PetConsoleApp
 
         void UpdatePet(Pet pet)
         {
+          
             Console.WriteLine("1. Name - " + pet.Name);
             Console.WriteLine("2. Type - " + pet.Type);
             Console.WriteLine("3. Previous owner - " + pet.PreviousOwner);
@@ -179,7 +187,8 @@ namespace PetConsoleApp
 
             int selection;
             Console.WriteLine("Select the specific pet info you wish to edit by entering the associated number:");
-            while (!int.TryParse(Console.ReadLine(), out selection))
+            while (!int.TryParse(Console.ReadLine(), out selection)
+                || selection > 7)
             {
                 Console.WriteLine("Select a number:");
             }

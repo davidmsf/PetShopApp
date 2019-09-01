@@ -85,5 +85,10 @@ namespace PetShopApp.Core.ApplicationService.Services
         {
             return _petRepo.ReadPets().OrderBy(pet => pet.Price).ToList();
         }
+
+        public List<Pet> GetFiveCheapestPets()
+        {
+            return _petRepo.ReadPets().OrderBy(pet => pet.Price).Take(5).ToList();
+        }
     }
 }
