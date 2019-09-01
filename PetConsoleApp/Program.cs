@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PetShopApp.Core.ApplicationService;
+using PetShopApp.Core.ApplicationService.Services;
+using PetShopApp.Core.DomainService;
+using PetShopApp.Infrastructure.Static.Data.Repositories;
+using System;
 
 namespace PetConsoleApp
 {
@@ -6,7 +11,15 @@ namespace PetConsoleApp
     {
         static void Main(string[] args)
         {
-            ConsolePrinter cp = new ConsolePrinter();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddScoped<IPetRepository, PetRepository>();
+            serviceCollection.AddScoped<IPetService, PetService>();
+            serviceCollection.AddScoped<IConsolePrinter, ConsolePrinter>();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var consolePrinter = serviceProvider.GetRequiredService<IConsolePrinter>();
+            consolePrinter.StartUI();
+
         }
     }
 }

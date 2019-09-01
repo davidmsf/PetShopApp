@@ -1,18 +1,15 @@
 ﻿using PetShopApp.Core.ApplicationService;
-using PetShopApp.Core.ApplicationService.Services;
-using PetShopApp.Core.DomainService;
 using PetShopApp.Core.Entity;
 using PetShopApp.Infrastructure.Static.Data;
-using PetShopApp.Infrastructure.Static.Data.Repositories;
 using System;
 using System.Collections.Generic;
 
 namespace PetConsoleApp
 {
-    public class ConsolePrinter
+    public class ConsolePrinter : IConsolePrinter
     {
-        private readonly IPetService _petService;
-        static IPetRepository petRepository;
+        private IPetService _petService;
+
 
         string[] menuItems = 
         {
@@ -26,26 +23,35 @@ namespace PetConsoleApp
                 "Exit"
         };
 
-        public ConsolePrinter()
+        public ConsolePrinter(IPetService petService)
         {
-            
+            _petService = petService;
+
+        }
+          
+        /// <summary>
+        /// Creates the static data from the fake database(pet objects), 
+        /// calls the method for showing the primary menu, and another method for the selection of the primary menu 
+        /// </summary>
+        public void StartUI()
+        {
+
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.Clear();
 
             FakeDB.InitData();
 
-            petRepository = new PetRepository();
-            _petService = new PetService(petRepository);
-
             var selection = ShowMenu();
             HandleSelection(selection);
-
         }
 
-        int ShowMenu()
+        /// <summary>
+        /// Prints the menuitems and then waits for the user input using a while loop
+        /// </summary>
+        /// <returns></returns>
+        public int ShowMenu()
         {
-
-
+            
             Console.WriteLine("\nSelect an action from the menu by selecting the menuitem number: \n");
 
             for (int i = 0; i < menuItems.Length; i++)
@@ -59,14 +65,16 @@ namespace PetConsoleApp
                 || number > menuItems.Length)
             {
                 Console.WriteLine($"Has to be a number between 1 and {menuItems.Length}");
-
-
             }
 
             return number;
         }
+        
 
-
+        /// <summary>
+        /// Using a switch statement to call the method assóciated with the users selection
+        /// </summary>
+        /// <param name="selection"></param>
         void HandleSelection(int selection)
         {
             while (selection != menuItems.Length)
@@ -106,17 +114,27 @@ namespace PetConsoleApp
             }
         }
 
+
+        /// <summary>
+        /// Calls the petservice find the type of pet the user has entered, then calls show all pets to show the searchresult 
+        /// </summary>
         private void SearchByType()
         {
             List<Pet> petsByType = _petService.SearchByType(PrintQuestion("Write the type of the pet:"));
             ShowAllPets(petsByType);
         }
 
+        /// <summary>
+        /// Calls the petservice find the five cheapest pets, then calls show all pets to show the searchresult 
+        /// </summary>
         private void FiveCheapestPets()
         {
             ShowAllPets(_petService.GetFiveCheapestPets());
         }
 
+        /// <summary>
+        /// Calls the petservice find order the pets by price, then calls show all pets to show the searchresult 
+        /// </summary>
         private void SortByPrice()
         {
             ShowAllPets(_petService.OrderByPrice());
@@ -284,6 +302,7 @@ namespace PetConsoleApp
 
             return dateTime;
         }
-        
+
+ 
     }
 }
