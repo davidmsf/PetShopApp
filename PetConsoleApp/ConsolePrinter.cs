@@ -10,7 +10,7 @@ namespace PetConsoleApp
     {
         private IPetService _petService;
 
-
+        //array of menuitems for the primary menu
         string[] menuItems = 
         {
                 "Show all pets",
@@ -140,6 +140,11 @@ namespace PetConsoleApp
             ShowAllPets(_petService.OrderByPrice());
         }
 
+        /// <summary>
+        /// Calls the insertPetProperties method for the user to input the pet data, which returns the pets properties.
+        /// Calls the petservice to create a new pet object, 
+        /// then calls save pet which sends the newly created pet, and returns the saved  
+        /// </summary>
         private void CreatePet()
         {
             string name, color, previousOwner, type;
@@ -162,7 +167,7 @@ namespace PetConsoleApp
                                soldDate,
                                birthDate);
 
-            var SavedPet = _petService.CreatePet(pet);
+            var SavedPet = _petService.SavePet(pet);
 
             if (SavedPet.Id > 0)
             {
@@ -170,6 +175,16 @@ namespace PetConsoleApp
             }
         }
 
+        /// <summary>
+        /// asks the user for the properties when creating a new pet
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="color"></param>
+        /// <param name="previousOwner"></param>
+        /// <param name="type"></param>
+        /// <param name="price"></param>
+        /// <param name="soldDate"></param>
+        /// <param name="birthDate"></param>
         private void insertPetProperties(out string name,
                                             out string color, 
                                             out string previousOwner, 
@@ -187,11 +202,20 @@ namespace PetConsoleApp
             birthDate = PrintQuestionReturnDateTime("Write the birth date of the pet(dd/mm/yyyy):");
         }
 
+        /// <summary>
+        /// Calls to the petservice to delete a specific pet by id
+        /// </summary>
+        /// <param name="id"></param>
         private void Delete(int id)
         {
             _petService.Delete(id);
         }
 
+        /// <summary>
+        /// The user can choose which parameter to update. 
+        /// When the user has written the new parametervalue the pet ís sent to petsercice
+        /// </summary>
+        /// <param name="pet"></param>
         void UpdatePet(Pet pet)
         {
           
@@ -246,6 +270,10 @@ namespace PetConsoleApp
             _petService.UpdatePet(pet);
         }
 
+        /// <summary>
+        /// Method used to loop through all pets from a list and print them
+        /// </summary>
+        /// <param name="pets"></param>
         void ShowAllPets(List<Pet> pets)
         {
             
@@ -262,6 +290,10 @@ namespace PetConsoleApp
             }
         }
 
+        /// <summary>
+        /// Asks the user for a specific number used as id for the pet
+        /// </summary>
+        /// <returns>id</returns>
         int GetIdFromUser()
         {
             Console.WriteLine("Enter pet id");
@@ -273,12 +305,22 @@ namespace PetConsoleApp
             return id;
         }
 
+        /// <summary>
+        /// Prints a question to the user and then asks for input which is returned as a string
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns>user input as string</returns>
         string PrintQuestion(string question)
         {
             Console.WriteLine(question);
             return Console.ReadLine();
         }
 
+        /// <summary>
+        /// Prints a question to the user and then asks for input which is returned as a double
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns>user input as double</returns>
         double PrintQuestionReturnDouble(string question)
         {
             double @double;
@@ -290,6 +332,11 @@ namespace PetConsoleApp
             return @double;
         }
 
+        /// <summary>
+        /// Prints a question to the user and then asks for input which is returned as a DateType
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns>user input as DateTime</returns>
         DateTime PrintQuestionReturnDateTime(string question)
         {
             Console.WriteLine(question);
