@@ -10,6 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PetShopApp.Core.ApplicationService;
+using PetShopApp.Core.ApplicationService.Services;
+using PetShopApp.Core.DomainService;
+using PetShopApp.Infrastructure.Static.Data;
+using PetShopApp.Infrastructure.Static.Data.Repositories;
 
 namespace PetShopApp.UI.RestAPI
 {
@@ -25,6 +30,9 @@ namespace PetShopApp.UI.RestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPetRepository, PetRepository>();
+            services.AddScoped<IPetService, PetService>();
+            FakeDB.InitData();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
