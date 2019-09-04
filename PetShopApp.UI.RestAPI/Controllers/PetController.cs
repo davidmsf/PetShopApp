@@ -26,7 +26,7 @@ namespace PetShopApp.UI.RestAPI.Controllers
         public ActionResult<IEnumerable<Pet>> Get()
         {
             return _petService.ReadPets();
-            
+
         }
 
         // GET api/values/5
@@ -39,8 +39,12 @@ namespace PetShopApp.UI.RestAPI.Controllers
 
         // POST api/pet
         [HttpPost]
-        public Pet Post([FromBody] Pet pet)
+        public ActionResult<Pet> Post([FromBody] Pet pet)
         {
+            if (string.IsNullOrEmpty(pet.Name))
+            {
+                return BadRequest("The pet name is required");
+            }
             return _petService.SavePet(pet);
         }
 
@@ -52,9 +56,13 @@ namespace PetShopApp.UI.RestAPI.Controllers
         }
 
         // PUT api/pet
-        [HttpPut]
-        public Pet Put(Pet pet)
+        [HttpPut("{id}")]
+        public ActionResult<Pet> Put(int id, Pet pet)
         {
+            if (id != pet.Id || id < 1)
+            {
+                return BadRequest("The pet name is required");
+            }
             return _petService.UpdatePet(pet);
         }
     }
