@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using PetShopApp.Core.ApplicationService;
 using PetShopApp.Core.ApplicationService.Services;
 using PetShopApp.Core.DomainService;
+using PetShopApp.Core.Exceptions;
+using PetShopApp.Core.Exceptions.Implementation;
 using PetShopApp.Infrastructure.Static.Data;
 using PetShopApp.Infrastructure.Static.Data.Repositories;
 
@@ -32,6 +34,7 @@ namespace PetShopApp.UI.RestAPI
         {
             services.AddScoped<IPetRepository, PetRepository>();
             services.AddScoped<IPetService, PetService>();
+            services.AddScoped<IExceptionCreator, ExceptionCreator>();
             FakeDB.InitData();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

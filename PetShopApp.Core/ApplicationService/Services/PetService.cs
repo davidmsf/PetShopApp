@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using PetShopApp.Core.DomainService;
 using PetShopApp.Core.Entity;
+using PetShopApp.Core.Exceptions;
 
 namespace PetShopApp.Core.ApplicationService.Services
 {
     public class PetService : IPetService
     {
         readonly IPetRepository _petRepo;
-
-        public PetService(IPetRepository petRepository)
+        readonly IExceptionCreator _exceptionCreator;
+        
+        public PetService(IPetRepository petRepository, IExceptionCreator exceptionCreator)
         {
             _petRepo = petRepository;
+            _exceptionCreator = exceptionCreator;
         }
 
         /// <summary>
@@ -43,6 +47,16 @@ namespace PetShopApp.Core.ApplicationService.Services
         /// <returns>The newly saved pet</returns>
         public Pet SavePet(Pet pet)
         {
+            if (string.IsNullOrEmpty(pet.Name))
+            {
+                _exceptionCreator.Invalid("You need to input the pets name");
+            }
+            
+            if (pet.Id != 0)
+            {
+                _exceptionCreator.Invalid("You should not input an id for a pet, the db will handle it");
+            }
+               
             return _petRepo.CreatePet(pet);
         }
 
@@ -54,7 +68,12 @@ namespace PetShopApp.Core.ApplicationService.Services
         /// <returns>The updated pet</returns>
         public Pet UpdatePet(Pet updatePet)
         {
-            return _petRepo.UpdatePet(updatePet);
+            var updatedPet = _petRepo.UpdatePet(updatePet);
+            if (updatedPet == null)
+            {
+                _exceptionCreator.Invalid("Cannot Update the pet, could not find it");
+            }
+            return updatedPet;
         }
 
         /// <summary>
@@ -63,6 +82,11 @@ namespace PetShopApp.Core.ApplicationService.Services
         /// <param name="id"></param>
         public void Delete(int id)
         {
+            if (this.FindPetById(id) == null)
+            {
+                _exceptionCreator.Invalid("Cannot delete the pet, could not find it");
+            }
+            
             _petRepo.Delete(id);
         }
 

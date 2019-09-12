@@ -2,6 +2,7 @@
 using PetShopApp.Core.Entity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PetShopApp.Infrastructure.Static.Data.Repositories
@@ -29,10 +30,10 @@ namespace PetShopApp.Infrastructure.Static.Data.Repositories
         /// <param name="id"></param>
         public void Delete(int id)
         {
-            var pets = FakeDB.pets.ToList();
-            var petToDelete = pets.FirstOrDefault(pet => pet.Id == id);
-            pets.Remove(petToDelete);
-            FakeDB.pets = pets;
+                var pets = FakeDB.pets.ToList();
+                var petToDelete = pets.FirstOrDefault(pet => pet.Id == id);
+                pets.Remove(petToDelete);
+                FakeDB.pets = pets;
         }
 
         /// <summary>
